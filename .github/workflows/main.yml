@@ -1,4 +1,4 @@
-name: Build audio.cpp (sm_61 + CUDA 11.8)
+name: Build audio.cpp (sm_61 + CUDA 12.4)
 
 on:
   push:
@@ -15,8 +15,8 @@ jobs:
     runs-on: windows-2022
 
     env:
-      CUDA_VERSION: "11.8.0"
-      CUDA_PATH: "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.8"
+      CUDA_VERSION: "12.4.0"
+      CUDA_PATH: "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v12.4"
 
     steps:
       - name: Checkout audio.cpp
@@ -43,7 +43,7 @@ jobs:
         with:
           version: 3.27.7
 
-      - name: Install CUDA 11.8
+      - name: Install CUDA 12.4
         uses: Jimver/cuda-toolkit@v0.2.29
         with:
           cuda: ${{ env.CUDA_VERSION }}
@@ -84,9 +84,9 @@ jobs:
           Copy-Item "build\bin\*.exe" "out\" -ErrorAction SilentlyContinue
           Copy-Item "build\bin\*.dll" "out\" -ErrorAction SilentlyContinue
           
-          Copy-Item "$env:CUDA_PATH\bin\cudart64_110.dll" "out\"
-          Copy-Item "$env:CUDA_PATH\bin\cublas64_11.dll" "out\"
-          Copy-Item "$env:CUDA_PATH\bin\cublasLt64_11.dll" "out\"
+          Copy-Item "$env:CUDA_PATH\bin\cudart64_12.dll" "out\"
+          Copy-Item "$env:CUDA_PATH\bin\cublas64_12.dll" "out\"
+          Copy-Item "$env:CUDA_PATH\bin\cublasLt64_12.dll" "out\"
 
           $ssldir = "C:\Program Files\OpenSSL-Win64\bin"
           if (Test-Path "$ssldir\libcrypto-3-x64.dll") {
@@ -112,15 +112,15 @@ jobs:
       - name: Zip
         shell: pwsh
         run: |
-          Compress-Archive -Path out\* -DestinationPath audio-sm61-cudart11.8.zip
+          Compress-Archive -Path out\* -DestinationPath audio-sm61-cudart12.4.zip
 
       - name: Upload to GitHub Releases
         uses: softprops/action-gh-release@v1
         with:
-          files: audio-sm61-cudart11.8.zip
+          files: audio-sm61-cudart12.4.zip
           tag_name: ${{ steps.get_source_sha.outputs.CURRENT_DATE }}
           target_commitish: ${{ github.sha }}
-          name: "audio.cpp cudart11.8 sm6.1 (${{ steps.get_source_sha.outputs.CURRENT_DATE }})"
+          name: "audio.cpp cudart12.4 sm6.1 (${{ steps.get_source_sha.outputs.CURRENT_DATE }})"
           body: "Source repository commit: https://github.com/0xShug0/audio.cpp/tree/${{ steps.get_source_sha.outputs.SOURCE_SHA }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
