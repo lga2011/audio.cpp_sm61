@@ -86,7 +86,17 @@ jobs:
           
           Copy-Item "$env:CUDA_PATH\bin\cudart64_12.dll" "out\"
           Copy-Item "$env:CUDA_PATH\bin\cublas64_12.dll" "out\"
-          Copy-Item "$env:CUDA_PATH\bin\cublasLt64_12.dll" "out\"
+          Copy-Item "$env:CUDA_PATH\bin\cublasLt64_11.dll" "out\" -ErrorAction SilentlyContinue
+          Copy-Item "$env:CUDA_PATH\bin\cublasLt64_12.dll" "out\" -ErrorAction SilentlyContinue
+          Copy-Item "$env:CUDA_PATH\bin\cufft64_11.dll" "out\" -ErrorAction SilentlyContinue
+          Copy-Item "$env:CUDA_PATH\bin\cufft64_12.dll" "out\" -ErrorAction SilentlyContinue
+
+          if (Test-Path "model_specs") {
+              Copy-Item "model_specs" "out\" -Recurse -Force
+          }
+          if (Test-Path "tools") {
+              Copy-Item "tools" "out\" -Recurse -Force
+          }
 
           $ssldir = "C:\Program Files\OpenSSL-Win64\bin"
           if (Test-Path "$ssldir\libcrypto-3-x64.dll") {
