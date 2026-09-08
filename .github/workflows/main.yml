@@ -95,10 +95,11 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force -Path out
           Copy-Item "build\bin\audiocpp*.exe" "out\" -ErrorAction SilentlyContinue
-
           Copy-Item "build\bin\*.dll" "out\" -ErrorAction SilentlyContinue
-          
-          Copy-Item "$env:CUDA_PATH\bin\cu*.dll" "out\"
+          Copy-Item "$env:CUDA_PATH\bin\cudart64_110.dll" "out\"
+          Copy-Item "$env:CUDA_PATH\bin\cublas64_11.dll" "out\"
+          Copy-Item "$env:CUDA_PATH\bin\cublasLt64_11.dll" "out\"
+          Copy-Item "$env:CUDA_PATH\bin\cufft64_10.dll" "out\" -ErrorAction SilentlyContinue
 
           if (Test-Path "model_specs") {
               Copy-Item "model_specs" "out\" -Recurse -Force
