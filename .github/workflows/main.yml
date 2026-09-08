@@ -1,4 +1,4 @@
-name: Build audio.cpp (sm_61 + CUDA 12.4)
+name: Build audio.cpp (sm_61 + CUDA 11.8)
 
 on:
   push:
@@ -15,8 +15,8 @@ jobs:
     runs-on: windows-2022
 
     env:
-      CUDA_VERSION: "12.4.0"
-      CUDA_PATH: "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v12.4"
+      CUDA_VERSION: "11.8.0"
+      CUDA_PATH: "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v11.8"
 
     steps:
       - name: Checkout audio.cpp
@@ -25,6 +25,14 @@ jobs:
           repository: 0xShug0/audio.cpp
           submodules: 'recursive'
           fetch-depth: 1
+
+      - name: Patch CUDA Min Version in CMakeLists
+        shell: pwsh
+        run: |
+          (Get-Content CMakeLists.txt) -replace "CUDAToolkit 12.0", "CUDAToolkit 11.8" | Set-Content CMakeLists.txt
+          Get-ChildItem -Recurse -Filter "CMakeLists.txt" | ForEach-Object {
+            (Get-Content $_.FullName) -replace "CUDAToolkit 12.0", "CUDAToolkit 11.8" | Set-Content $_.FullName
+          }
 
       - name: Get source SHA and current date
         id: get_source_sha
@@ -43,7 +51,7 @@ jobs:
         with:
           version: 3.27.7
 
-      - name: Install CUDA 12.4
+      - name: Install CUDA 11.8
         uses: Jimver/cuda-toolkit@v0.2.29
         with:
           cuda: ${{ env.CUDA_VERSION }}
@@ -84,12 +92,10 @@ jobs:
           Copy-Item "build\bin\*.exe" "out\" -ErrorAction SilentlyContinue
           Copy-Item "build\bin\*.dll" "out\" -ErrorAction SilentlyContinue
           
-          Copy-Item "$env:CUDA_PATH\bin\cudart64_12.dll" "out\"
-          Copy-Item "$env:CUDA_PATH\bin\cublas64_12.dll" "out\"
-          Copy-Item "$env:CUDA_PATH\bin\cublasLt64_11.dll" "out\" -ErrorAction SilentlyContinue
-          Copy-Item "$env:CUDA_PATH\bin\cublasLt64_12.dll" "out\" -ErrorAction SilentlyContinue
+          Copy-Item "$env:CUDA_PATH\bin\cudart64_110.dll" "out\"
+          Copy-Item "$env:CUDA_PATH\bin\cublas64_11.dll" "out\"
+          Copy-Item "$env:CUDA_PATH\bin\cublasLt64_11.dll" "out\"
           Copy-Item "$env:CUDA_PATH\bin\cufft64_11.dll" "out\" -ErrorAction SilentlyContinue
-          Copy-Item "$env:CUDA_PATH\bin\cufft64_12.dll" "out\" -ErrorAction SilentlyContinue
 
           if (Test-Path "model_specs") {
               Copy-Item "model_specs" "out\" -Recurse -Force
@@ -122,15 +128,15 @@ jobs:
       - name: Zip
         shell: pwsh
         run: |
-          Compress-Archive -Path out\* -DestinationPath audio-sm61-cudart12.4.zip
+          Compress-Archive -Path out\* -DestinationPath audio-sm61-cudart11.8.zip
 
       - name: Upload to GitHub Releases
         uses: softprops/action-gh-release@v1
         with:
-          files: audio-sm61-cudart12.4.zip
+          files: audio-sm61-cudart11.8.zip
           tag_name: ${{ steps.get_source_sha.outputs.CURRENT_DATE }}
           target_commitish: ${{ github.sha }}
-          name: "audio.cpp cudart12.4 sm6.1 (${{ steps.get_source_sha.outputs.CURRENT_DATE }})"
+          name: "audio.cpp cudart11.8 sm6.1 (${{ steps.get_source_sha.outputs.CURRENT_DATE }})"
           body: "Source repository commit: https://github.com/0xShug0/audio.cpp/tree/${{ steps.get_source_sha.outputs.SOURCE_SHA }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
