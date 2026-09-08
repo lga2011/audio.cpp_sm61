@@ -12,6 +12,8 @@ on:
 
 permissions:
   contents: write
+  id-token: none
+  attestations: none
 
 jobs:
   build:
