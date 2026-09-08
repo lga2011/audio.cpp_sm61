@@ -140,9 +140,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: audio-sm61-cudart11.8.zip
-          tag_name: "v_${{ steps.get_source_sha.outputs.TIMESTAMP }}_${{ steps.get_source_sha.outputs.SHORT_SHA }}"
+          tag_name: ${{ steps.get_source_sha.outputs.CURRENT_DATE }}
           target_commitish: ${{ github.sha }}
-          name: "audio.cpp cudart11.8 sm6.1 (${{ steps.get_source_sha.outputs.TIMESTAMP }})"
+          name: "audio.cpp cudart11.8 sm6.1 (${{ steps.get_source_sha.outputs.CURRENT_DATE }})"
           body: "Source repository commit: https://github.com/0xShug0/audio.cpp/tree/${{ steps.get_source_sha.outputs.SOURCE_SHA }}"
           overwrite: true
         env:
