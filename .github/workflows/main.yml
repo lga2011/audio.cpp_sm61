@@ -45,7 +45,7 @@ jobs:
         run: |
           $sha = git rev-parse HEAD
           echo "SOURCE_SHA=$sha" >> $env:GITHUB_OUTPUT
-          $date = Get-Date -Format "yyyy-MM-dd"
+          $date = Get-Date -Format "yyyyMMddHHmm"
           echo "CURRENT_DATE=$date" >> $env:GITHUB_OUTPUT
 
       - name: Install Dependencies
@@ -135,7 +135,7 @@ jobs:
           Compress-Archive -Path out\* -DestinationPath audio-sm61-cudart11.8.zip
 
       - name: Upload to GitHub Releases
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: audio-sm61-cudart11.8.zip
           tag_name: ${{ steps.get_source_sha.outputs.CURRENT_DATE }}
